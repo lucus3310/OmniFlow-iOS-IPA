@@ -98,7 +98,16 @@ struct FileManagerView: View {
 
                         if vm.duplicateGroups.isEmpty {
                             Spacer()
-                            ContentUnavailableView("未發現重複檔案", systemImage: "checkmark.seal.fill", description: Text("您的 iPhone 16 儲存空間目前無冗餘副本"))
+                            VStack(spacing: 10) {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.system(size: 42))
+                                    .foregroundStyle(.green)
+                                Text("未發現重複檔案")
+                                    .font(.headline)
+                                Text("您的 iPhone 16 儲存空間目前無冗餘副本")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                             Spacer()
                         } else {
                             List {

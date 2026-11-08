@@ -128,12 +128,11 @@ class FileManagerViewModel: ObservableObject {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
         var hasher = SHA256()
-        while autoreleasepool(invoking: {
+        while true {
             let data = handle.readData(ofLength: 512 * 1024)
-            guard !data.isEmpty else { return false }
+            if data.isEmpty { break }
             hasher.update(data: data)
-            return true
-        }) {}
+        }
         let digest = hasher.finalize()
         return digest.map { String(format: "%02hhx", $0) }.joined()
     }

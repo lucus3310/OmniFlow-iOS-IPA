@@ -6,6 +6,7 @@
 import SwiftUI
 import AVKit
 import AVFoundation
+import CoreMedia
 
 struct FrameByFramePlayerView: View {
     @EnvironmentObject var fileManagerVM: FileManagerViewModel

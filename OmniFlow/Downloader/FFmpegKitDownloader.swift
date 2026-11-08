@@ -5,6 +5,7 @@
 
 import SwiftUI
 import Foundation
+import Combine
 
 class DownloadManagerViewModel: ObservableObject {
     struct DownloadTaskModel: Identifiable {

@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-ipa:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
       - name: Generate Xcode Project via XcodeGen
         run: |
           if ! command -v xcodegen >/dev/null 2>&1; then
-            brew install xcodegen
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install xcodegen
           fi
           xcodegen generate
 
@@ -30,7 +30,10 @@ jobs:
             -scheme OmniFlow \
             -configuration Release \
             -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -derivedDataPath build \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=NO \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -55,5 +58,6 @@ jobs:
         run: |
           gh release delete latest -y --cleanup-tag || true
           gh release create latest OmniFlow.ipa \
+            --target ${{ github.sha }} \
             --title "OmniFlow iOS 18 (iPhone 16 Xcode Compiled IPA)" \
-            --notes "Automatically compiled by GitHub Actions macOS-14 Xcode 16. Ready for SideStore, AltStore, and Sideloadly."
+            --notes "Automatically compiled by GitHub Actions macOS-15 Xcode 16. Ready for SideStore, AltStore, and Sideloadly."
