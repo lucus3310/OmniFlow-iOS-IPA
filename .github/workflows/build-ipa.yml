@@ -1,0 +1,59 @@
+name: Build Genuine iOS IPA (Xcode 16 macOS)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build-ipa:
+    runs-on: macos-14
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Generate Xcode Project via XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+
+      - name: Compile ARM64 Mach-O iOS App via Xcodebuild
+        run: |
+          xcodebuild clean build \
+            -project OmniFlow.xcodeproj \
+            -scheme OmniFlow \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES
+
+      - name: Ad-Hoc Sign & Package into Standard .ipa
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/OmniFlow.app Payload/
+          codesign --force --deep --sign - Payload/OmniFlow.app
+          zip -r9 OmniFlow.ipa Payload
+
+      - name: Upload Compiled .ipa Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OmniFlow-iPhone16-IPA
+          path: OmniFlow.ipa
+
+      - name: Publish .ipa to GitHub Releases for Direct iPhone Download
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest -y --cleanup-tag || true
+          gh release create latest OmniFlow.ipa \
+            --title "OmniFlow iOS 18 (iPhone 16 Xcode Compiled IPA)" \
+            --notes "Automatically compiled by GitHub Actions macOS-14 Xcode 16. Ready for SideStore, AltStore, and Sideloadly."

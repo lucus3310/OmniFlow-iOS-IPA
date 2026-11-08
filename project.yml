@@ -1,0 +1,23 @@
+name: OmniFlow
+options:
+  bundleIdPrefix: com.omniflow
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  OmniFlow:
+    type: application
+    platform: iOS
+    sources:
+      - path: OmniFlow
+    info:
+      path: OmniFlow/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.omniflow.studio
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
